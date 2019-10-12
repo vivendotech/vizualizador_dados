@@ -1,16 +1,15 @@
 console.log("oi mundo");
 
 
-function arrumar_dados(texto_csv){
+function parser(texto_csv){
     let array_linhas = texto_csv.split(/\r?\n/);
     // console.log(array_linhas)
-    let array_arrays= array_linhas.map((elemento, id)=>{
-
+    let callback =  (elemento, id)=>{
         let regra_nao_quero_primeiro_elemento = id != 0
         let array = elemento.split(";")
         
         if (regra_nao_quero_primeiro_elemento){
-            let saida = array.map(ele =>{
+            let saida = array.map((ele) =>{
                 return Number(ele)
             })
             return saida
@@ -19,16 +18,21 @@ function arrumar_dados(texto_csv){
         }else{
             return array 
         }
-    })
+    }
 
-    console.log(array_arrays)
+    let array_arrays= array_linhas.map(callback)
 
-
-
-
-
+    return array_arrays
 }
 
+function arrruma_saida_d3(array, id){
+    let saida = array.map( (ele) =>{
+        return {time:ele[0], value: ele[id]}
+    })
+
+    return saida
+
+}
 
 
 
@@ -43,8 +47,10 @@ readFile = function () {
         console.log("leu o documento")
         document.getElementById('out').innerHTML = reader.result;
 
-        arrumar_dados(reader.result)
+        let array = parser(reader.result)
 
+        window.data = arrruma_saida_d3(array,1)
+        console.log(window.data)
     };
     // start reading the file. When it is done, calls the onload event defined above.
     reader.readAsBinaryString(fileInput.files[0]);
